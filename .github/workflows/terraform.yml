@@ -42,28 +42,13 @@ jobs:
           echo "Configuring AWS for MAIN"
           echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_MAIN }}" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_MAIN }}" >> $GITHUB_ENV
-        else
-          echo "Branch not recognized. AWS credentials will not be configured."
-        fi
 
-    # Configura o arquivo .tfvars de acordo com a branch
+    # Seleciona o arquivo .tfvars de acordo com a branch
     - name: Determine .tfvars file based on branch
       run: |
-        # Detecta a branch atual
-        branch_name="${GITHUB_REF#refs/heads/}"
-          
-        # Define o arquivo .tfvars baseado na branch
-        if [ "$branch_name" == "dev" ]; then
-          echo "tfvars_file=dev.tfvars" >> $GITHUB_ENV
-        elif [ "$branch_name" == "uat" ]; then
-          echo "tfvars_file=uat.tfvars" >> $GITHUB_ENV
-        elif [ "$branch_name" == "main" ]; then
-          echo "tfvars_file=prod.tfvars" >> $GITHUB_ENV
-        else
-          echo "tfvars_file=default.tfvars" >> $GITHUB_ENV
-        fi
+        echo "tfvars_file=${{ github.ref_name }}.tfvars" >> $GITHUB_ENV
         
-    # Inicializa o Terraform
+    # Executa o Terraform Init
     - name: Terraform Init
       run: terraform init
 
@@ -76,7 +61,6 @@ jobs:
 
     # Executa o Terraform Apply
     - name: Terraform Apply -var-file="${{ env.tfvars_file }}"
-      if: github.ref_name == 'main' || github.ref_name == 'uat' || github.ref_name == 'dev'
       run: terraform apply -auto-approve
       env:
         AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
