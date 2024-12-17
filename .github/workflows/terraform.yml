@@ -40,14 +40,20 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_UAT }}" >> $GITHUB_ENV
         elif [ "${{ github.ref_name }}" == "main" ]; then
           echo "Configuring AWS for MAIN"
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_MAIN }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_MAIN }}" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_PROD }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}" >> $GITHUB_ENV
         fi  
 
     # Seleciona o arquivo .tfvars de acordo com a branch
     - name: Determine .tfvars file based on branch
       run: |
-        echo "tfvars_file=${{ github.ref_name }}.tfvars" >> $GITHUB_ENV
+        if [ "${{ github.ref_name }}" == "dev" ]; then
+          echo "tfvars_file=dev.tfvars" >> $GITHUB_ENV
+        elif [ "${{ github.ref_name }}" == "uat" ]; then
+          echo "tfvars_file=uat.tfvars" >> $GITHUB_ENV
+        elif [ "${{ github.ref_name }}" == "main" ]; then
+          echo "tfvars_file=prod.tfvars" >> $GITHUB_ENV
+        fi  
         
     # Executa o Terraform Init
     - name: Terraform Init
