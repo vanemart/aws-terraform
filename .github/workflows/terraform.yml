@@ -1,4 +1,4 @@
-name: Terraform Workflow
+sname: Terraform Workflow
 
 on:
   push:
@@ -48,11 +48,11 @@ jobs:
     - name: Determine .tfvars file based on branch
       run: |
         if [ "${{ github.ref_name }}" == "dev" ]; then
-          echo "tfvars_file=dev.tfvars" >> $GITHUB_ENV
+          echo "tfvars_file=parameters/dev.tfvars" >> $GITHUB_ENV
         elif [ "${{ github.ref_name }}" == "uat" ]; then
-          echo "tfvars_file=uat.tfvars" >> $GITHUB_ENV
+          echo "tfvars_file=parameters/uat.tfvars" >> $GITHUB_ENV
         elif [ "${{ github.ref_name }}" == "main" ]; then
-          echo "tfvars_file=prod.tfvars" >> $GITHUB_ENV
+          echo "tfvars_file=parameters/prod.tfvars" >> $GITHUB_ENV
         fi  
         
     # Executa o Terraform Init
